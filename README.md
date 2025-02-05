@@ -1,50 +1,104 @@
-# React + TypeScript + Vite
+# EFT Scraper
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web scraper and API for extracting Escape from Tarkov quest data from the Fandom wiki.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
+- Scrapes quests from the EFT Fandom wiki and stores them in quests.json.
+- Node.js API serves the latest quest data dynamically.
+- React frontend displays the quest list with filtering options.
+- Filters by NPC vendor and toggles quests required for Kappa.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Project Structure
+```
+eft-scraper/
+│── client/            # React frontend
+│── server/            # Node.js backend
+│   ├── src/
+│   │   ├── index.ts    # Express API server
+│   │   ├── fetchQuests.ts # Puppeteer scraper
+│   │   ├── scrapeQuests.ts # Alternative scraper with caching
+│── quests.json        # Cached quest data
+│── README.md          # Documentation
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+---
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## Setup Instructions
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+### Install Dependencies
+Navigate to the root of the project and install dependencies for both client and server.
+
+```sh
+cd server
+npm install
+cd ../client
+npm install
 ```
+
+### Run the Backend Server
+```sh
+cd server
+npm run dev
+```
+The API will be available at `http://localhost:3001/api/quests`.
+
+### Run the Frontend
+```sh
+cd client
+npm run dev
+```
+The UI will be available at `http://localhost:5173`.
+
+---
+
+## API Endpoints
+
+### Get Quests
+Fetches the latest quests.
+
+```
+GET /api/quests
+```
+
+Response:
+```json
+[
+  {
+    "questGiver": "Prapor",
+    "name": "Debut",
+    "link": "https://escapefromtarkov.fandom.com/wiki/Debut",
+    "objectives": [
+      "Eliminate 5 Scavs all over the Tarkov territory",
+      "Obtain and hand over 2 MP-133 12ga shotguns"
+    ],
+    "rewards": [
+      "+1,700 EXP",
+      "Prapor Rep +0.02",
+      "15,000 Roubles",
+      "PP-91 Kedr 9x18PM submachine gun"
+    ],
+    "requiredForKappa": true
+  }
+]
+```
+
+### Trigger a Fresh Scrape
+```
+GET /api/scrape
+```
+Forces a new scrape from the Fandom wiki and updates `quests.json`.
+
+---
+
+## Contributing
+- Ensure your code follows the existing structure.
+- Open an issue or submit a pull request with improvements.
+
+---
+
+## License
+This project is licensed under the MIT License.
