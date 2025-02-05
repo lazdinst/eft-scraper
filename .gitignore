@@ -1,0 +1,14 @@
+# Node.js dependencies
+node_modules/
+package-lock.json
+
+# Logs & temporary files
+logs/
+*.log
+
+# Puppeteer cache
+.cache/
+puppeteer-screenshots/
+
+# Local servers
+.DS_Store

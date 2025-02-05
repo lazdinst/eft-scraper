@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EFT Quests</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #1e1e1e;
+        color: white;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background: #2a2a2a;
+      }
+      th,
+      td {
+        border: 1px solid #444;
+        padding: 10px;
+        text-align: left;
+      }
+      th {
+        background-color: #444;
+      }
+      a {
+        color: #f39c12;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      button {
+        background: #f39c12;
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        margin-bottom: 15px;
+        font-size: 16px;
+      }
+      button:hover {
+        background: #e67e22;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Escape from Tarkov Quests</h1>
+    <button id="toggle-filter">Show Only Kappa Required</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Quest Giver</th>
+          <th>Quest Name</th>
+          <th>Objectives</th>
+          <th>Rewards</th>
+          <th>Kappa Required</th>
+        </tr>
+      </thead>
+      <tbody id="quest-table-body">
+        <!-- Data will be inserted here -->
+      </tbody>
+    </table>
+
+    <script>
+      let quests = [];
+      let showKappaOnly = false;
+
+      async function loadQuests() {
+        try {
+          const response = await fetch("quests.json");
+          quests = await response.json();
+          renderQuests();
+        } catch (error) {
+          console.error("Error loading quests:", error);
+        }
+      }
+
+      function renderQuests() {
+        const tableBody = document.getElementById("quest-table-body");
+        tableBody.innerHTML = "";
+
+        const filteredQuests = showKappaOnly
+          ? quests.filter((q) => q.requiredForKappa)
+          : quests;
+
+        filteredQuests.forEach((quest) => {
+          const row = document.createElement("tr");
+
+          row.innerHTML = `
+                    <td>${quest.questGiver}</td>
+                    <td><a href="${quest.link}" target="_blank">${
+            quest.name
+          }</a></td>
+                    <td>${quest.objectives
+                      .map((obj) => `• ${obj}`)
+                      .join("<br>")}</td>
+                    <td>${quest.rewards
+                      .map((reward) => `• ${reward}`)
+                      .join("<br>")}</td>
+                    <td style="color: ${
+                      quest.requiredForKappa ? "red" : "green"
+                    };">
+                        ${quest.requiredForKappa ? "Yes" : "No"}
+                    </td>
+                `;
+
+          tableBody.appendChild(row);
+        });
+      }
+
+      document.getElementById("toggle-filter").addEventListener("click", () => {
+        showKappaOnly = !showKappaOnly;
+        document.getElementById("toggle-filter").innerText = showKappaOnly
+          ? "Show All Quests"
+          : "Show Only Kappa Required";
+        renderQuests();
+      });
+
+      loadQuests();
+    </script>
+  </body>
+</html>
